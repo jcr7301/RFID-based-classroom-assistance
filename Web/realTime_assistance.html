@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<link href="css/bootstrap.min.css" rel="stylesheet" />
+  
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+               <h1 class="panel-title">Realtime Assistance</h2>
+            </div>
+            <div class="panel-body" style="min-height:585px;"> 
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Morning Class (From 8 to 12)</h4>
+                        <input type="hidden" id="ini1" value=5>
+                        <input type="hidden" id="fin1" value=9>
+                        <p id="class1">There is no class in this moment</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>IoT Class (From 17 to 21)</h4>
+                        <input type="hidden" id="ini2" value=14>
+                        <input type="hidden" id="fin2" value=18>
+                        <p id="class2">There is no class in this moment</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="show_info.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/dataPicker_style.css">
+  <link rel="stylesheet" href="css/jquery-ui.min.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $(function() {
+    //Using jQuery-ui datepicker widget
+    $("#datepicker").datepicker({
+        onSelect: function(){
+            var currentDate = $( "#datepicker" ).datepicker( "getDate" );
+            var currentDay = currentDate.getUTCDate()+1;
+            var currentMonth = currentDate.getUTCMonth()+1;
+            var currentYear = currentDate.getUTCFullYear();
+            $("#date1").text(currentDay + "/" + currentMonth + "/" + currentYear);
+            $("#date2").text(currentDay + "/" + currentMonth + "/" + currentYear);
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "https://iot-backend-metropolia.herokuapp.com/api/data/4", false ); // false for synchronous request
+            xmlHttp.send(null);
+            var jObj = JSON.parse(xmlHttp.responseText);
+            var stored1="";
+            var stored2="";
+
+            for(var i=0; i<jObj.length; i++){
+                if(jObj[i].readings!=null){
+                    var uid = jObj[i].readings[0].uid;
+                    for(var j=0; j<jObj.length; j++){
+                        if(jObj[j].properties!=null && jObj[j].properties.identifier==uid){
+                            var userName = jObj[j].properties.userName;
+                        }
+                    }
+                    var todayCourse = currentYear == jObj[i].timeStamp.slice(0, 4) && currentMonth == jObj[i].timeStamp.slice(5, 7) 
+                    && currentDay == jObj[i].timeStamp.slice(8, 10);
+
+                    var onClassroom = document.getElementById("ini1").value <= jObj[i].timeStamp.slice(11, 13) && jObj[i].timeStamp.slice(11, 13) < document.getElementById("fin1").value;
+
+                    var onClassroom2 = document.getElementById("ini2").value <= jObj[i].timeStamp.slice(11, 13) && jObj[i].timeStamp.slice(11, 13) < document.getElementById("fin2").value;
+
+
+                    if(todayCourse && onClassroom){
+                        var pos = stored1.search(userName);
+                        if(pos==-1){
+                            //stored = stored + jObj[i].readings[0].uid + ", ";
+                            stored1 = stored1 + userName + ", ";
+                        }
+                    }
+                    else if(todayCourse && onClassroom2){
+                        var pos = stored2.search(userName);
+                        if(pos==-1){
+                            stored2 = stored2 + userName + ", ";
+                        }
+                    }
+                }
+            }
+            document.getElementById("class1").innerHTML = stored1;
+            document.getElementById("class2").innerHTML = stored2;
+        }
+    });
+  });
+  </script>
+<link href="css/bootstrap.min.css" rel="stylesheet" />
+  
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+               <h1 class="panel-title">Consult Assistance</h2>
+            </div>
+            <div class="panel-body" style="min-height:585px;"> 
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4>Please, select a date</h4>
+                        <p>Date: <input type="text" id="datepicker"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p id="date1"></p>
+                        <h4>Morning Class (From 8 to 12)</h4>
+                        <input type="hidden" id="ini1" value=5>
+                        <input type="hidden" id="fin1" value=9>
+                        <p id="class1"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p id="date2"></p>
+                        <h4>IoT Class (From 17 to 21)</h4>
+                        <input type="hidden" id="ini2" value=14>
+                        <input type="hidden" id="fin2" value=18>
+                        <p id="class2"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
